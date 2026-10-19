@@ -19,6 +19,14 @@ const DATA_FILE = path.join(__dirname, 'courses.json');
 // Middleware to parse JSON request bodies
 app.use(express.json());
 
+// Middleware to handle JSON parse errors gracefully
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    return res.status(400).json({ error: 'Invalid JSON payload. Please verify your JSON syntax.' });
+  }
+  next();
+});
+
 // List of allowed status values
 const ALLOWED_STATUSES = ['Not Started', 'In Progress', 'Completed'];
 
